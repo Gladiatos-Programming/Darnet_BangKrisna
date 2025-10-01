@@ -1,0 +1,8 @@
+prefix=/home/krisna/gladiatos_ws/devel
+
+Name: darnet_gazebo
+Description: Description of darnet_gazebo
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

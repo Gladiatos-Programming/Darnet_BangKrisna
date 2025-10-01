@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="map" default="$(find darnet_gazebo)/worlds/empty.world"/>
+    <arg name="init_x" default="1.0"/>
+    <arg name="init_y" default="0.0"/>
+    <arg name="init_z" default="1.05"/>
+    <arg name="init_yaw" default="0.0"/>
+    
+    <!-- Give the robot description parameter a name -->
+    <arg name="description_name"           default="darnet_description"/>
+    <!-- Set robot description path -->
+    <arg name="description_file"           default="$(find darnet_description)/urdf/darnet.xacro"/>
+    <!-- Joint state topic name -->
+    <arg name="joint_states_topic"          default="/joint_states"/>
+
+
+    
+    
+    <!-- Launch gazebo world -->
+    
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(arg map)"/>
+        <arg name="gui" value="true"/>
+    </include>
+    
+    <!-- Used for spawning our complete darnet model (3d design, links, joints, etc) -->
+    <param name="robot_description" command="$(find xacro)/xacro '$(find darnet_description)/urdf/darnet.xacro'" />
+    
+    <node name="darnet_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="-urdf -param robot_description -model /darnet -robot_namespace /
+																				-x $(arg init_x) -y $(arg init_y) -z $(arg init_z) -Y $(arg init_yaw)"/>
+    
+    
+    <!-- This is for RViz. you need this but dont know for what -->
+    <param name="$(arg description_name)" textfile="$(arg description_file)"/>
+    
+    <!-- Joint state publisher -->
+      <node name="joint_state_publisher" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" output="screen">
+        <param name="use_gui"           value="true"/>
+        <param name="rate"              value="100"/>
+        <remap from="robot_description" to="$(arg description_name)"/>
+        <remap from="joint_states"      to="$(arg joint_states_topic)"/>
+      </node>
+
+      <!-- Robot state publisher -->
+      <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen">
+        <param name="publish_frequency" value="100"/>
+        <param name="use_tf_static"     value="true"/>
+        <remap from="robot_description" to="$(arg description_name)"/>
+        <remap from="joint_states"      to="$(arg joint_states_topic)"/>
+      </node>
+
+      <!-- RViz -->
+      <node name="rviz" pkg="rviz" type="rviz"
+            output="screen"
+            args="-d $(find darnet_description)/rviz/darnet_simulation_viz.rviz"
+            />
+    
+
+</launch>

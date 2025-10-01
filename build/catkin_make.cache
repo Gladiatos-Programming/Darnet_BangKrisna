@@ -1,0 +1,2 @@
+darnet_simulation/darnet_control:darnet_simulation/darnet_description:darnet_simulation/darnet_gazebo:gladiatos_darnet
+-DCATKIN_DEVEL_PREFIX=/home/krisna/gladiatos_ws/devel -DCMAKE_INSTALL_PREFIX=/home/krisna/gladiatos_ws/install -G Unix Makefiles
